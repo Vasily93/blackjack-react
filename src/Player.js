@@ -4,14 +4,16 @@ class Player extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            
+            cards: []
         }
         this.handleDraw = this.handleDraw.bind(this)
     }
 
-    handleDraw() {
-        const card = this.props.draw()
-        console.log('card====', card)
+    async handleDraw() {
+        const card =  await this.props.draw();
+        let newCards = this.state.cards;
+        newCards.push(card);
+        this.setState({cards: newCards})
     }
 
     render() {

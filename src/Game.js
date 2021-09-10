@@ -16,15 +16,14 @@ class Game extends Component {
         axios.get(`https://deckofcardsapi.com/api/deck/${this.state.deck.deck_id}/draw/?count=1`)
             .then(res => {
                 const {suit, value} = res.data.cards[0];
-                console.log(suit, value) //getting card value but returning early so its an empty obj
                 card.suit = suit;
                 card.value = value;
                 this.setState(state => {
                     state.deck['remaining'] = res.data.remaining;
                     return state
                 })
-                return card;
             })
+            return card;
     }
 
     componentDidMount() {
