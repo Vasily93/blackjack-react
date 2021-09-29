@@ -1,6 +1,12 @@
 import React, {Component} from 'react';
 import Player from './Player';
+import PlayerForm from './PlayerForm';
 import axios from 'axios';
+
+//button to start a game with players name
+//assign $500 to a player, ask for bet amount
+//draw one card
+//button to draw
 
 class Game extends Component {
     constructor(props) {
@@ -8,13 +14,20 @@ class Game extends Component {
         this.state = {
             deck: null
         }
-        this.drawCard = this.drawCard.bind(this)
+        this.drawCard = this.drawCard.bind(this);
+        this.registerPlayer = this.registerPlayer.bind(this);
+    }
+
+    registerPlayer(name) {
+        const player = {name: name, money: 500};
+        this.setState(state => state = {...state, player: player})
     }
 
     drawCard() {
         let card = {};
         axios.get(`https://deckofcardsapi.com/api/deck/${this.state.deck.deck_id}/draw/?count=1`)
             .then(res => {
+                console.log(res.data.cards[0])
                 const {suit, value} = res.data.cards[0];
                 card.suit = suit;
                 card.value = value;
@@ -36,15 +49,16 @@ class Game extends Component {
 
     render() {
         let deck = this.state.deck ? 
-            <p>Cards left: {this.state.deck.remaining}</p> :
+            <p>Deck: {this.state.deck.remaining}</p> :
             <p>Waiting......</p>
 
+        const game = this.state.player ?
+            <Player player={this.state.player} draw={this.drawCard}/> :
+            <PlayerForm registerPlayer={this.registerPlayer} />
         return(
             <div>
                 {deck}
-
-                <Player id={1} draw={this.drawCard}/>
-                <Player id={2} draw={this.drawCard}/>
+                {game}
             </div>
         )
     }
