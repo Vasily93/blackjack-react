@@ -3,10 +3,7 @@ import Player from './Player';
 import PlayerForm from './PlayerForm';
 import axios from 'axios';
 
-//button to start a game with players name
-//assign $500 to a player, ask for bet amount
-//draw one card
-//button to draw
+
 
 class Game extends Component {
     constructor(props) {
@@ -23,14 +20,14 @@ class Game extends Component {
         this.setState(state => state = {...state, player: player})
     }
 
-    drawCard() {
+    async drawCard() {
         let card = {};
-        axios.get(`https://deckofcardsapi.com/api/deck/${this.state.deck.deck_id}/draw/?count=1`)
+        await axios.get(`https://deckofcardsapi.com/api/deck/${this.state.deck.deck_id}/draw/?count=1`)
             .then(res => {
-                console.log(res.data.cards[0])
-                const {suit, value} = res.data.cards[0];
+                const {suit, value, image} = res.data.cards[0];
                 card.suit = suit;
                 card.value = value;
+                card.image = image;
                 this.setState(state => {
                     state.deck['remaining'] = res.data.remaining;
                     return state

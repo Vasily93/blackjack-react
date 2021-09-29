@@ -6,7 +6,8 @@ class Player extends Component {
         this.state = {
             cards: [],
             bet: 0,
-            playing: false
+            playing: false,
+            sum: 0
         }
     }
 
@@ -21,22 +22,27 @@ class Player extends Component {
         this.setState(state => state = {...state, bet: bet})
     }
 
-    handleDraw = () => {
-        const card = this.props.draw();
+    handleDraw = async() => {
+        const card = await this.props.draw();
+        // console.log(card.value)
+        this.addToSum(card.value)
         let newCards = this.state.cards;
         newCards.push(card);
         this.setState({cards: newCards})
     }
 
-    // componentDidUpdate() {
-    //     let newSum = 0;
-    //     this.state.cards.forEach(c  => {
-    //         if(typeof parseInt(c.value) === 'number') {
-    //             newSum += parseInt(c.value)
-    //         }
-    //     })
-    //     console.log('update', newSum)
-    // }
+    addToSum = (value) => {
+        let num;
+        if(!isNaN(parseInt(value))) {
+            num = parseInt(value)
+        } else if(value !== 'ACE') {
+            num = 10
+        } else {
+            num = 11
+        }
+        const newSum = this.state.sum + num;
+        this.setState(state => state = {...state, sum: newSum})
+    }
 
     render() {
         let {name, money} = this.props.player;
@@ -53,7 +59,6 @@ class Player extends Component {
                 </label>
                 <button>Place a bet</button>
             </form>
-
         return(
             <div>
                 <h4>Player: {name}</h4>
@@ -61,7 +66,9 @@ class Player extends Component {
                 {game}
                 <ul>
                     {this.state.cards.map(c => (
-                        <li>{`${c.value} of ${c.suit}`}</li>
+                        <li>
+                            <img alt='card' src={c.image}/>
+                        </li>
                     ))}
                 </ul>
             </div>
