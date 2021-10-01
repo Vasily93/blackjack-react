@@ -7,7 +7,8 @@ class Player extends Component {
             cards: [],
             bet: 0,
             playing: false,
-            sum: 0
+            sum: 0,
+            money: 500
         }
     }
 
@@ -24,11 +25,10 @@ class Player extends Component {
 
     handleDraw = async() => {
         const card = await this.props.draw();
-        // console.log(card.value)
-        this.addToSum(card.value)
         let newCards = this.state.cards;
         newCards.push(card);
         this.setState({cards: newCards})
+        this.addToSum(card.value)
     }
 
     addToSum = (value) => {
@@ -38,17 +38,31 @@ class Player extends Component {
         } else if(value !== 'ACE') {
             num = 10
         } else {
-            num = 11
+            const choice = prompt(`You got total of ${this.state.sum}. Would you like to add 1 or 11?`)
+            num = parseInt  (choice);
+            console.log(num)
         }
         const newSum = this.state.sum + num;
-        this.setState(state => state = {...state, sum: newSum})
+        if(newSum > 21) {
+            alert('You lost!');
+            const updatedMoney = this.state.money - this.state.bet
+            this.setState(state => state = {
+                bet:0,
+                playing: false,
+                cards: [],
+                sum: 0,
+                money: updatedMoney})
+        } else {
+            this.setState(state => state = {...state, sum: newSum})
+        }
     }
 
     render() {
-        let {name, money} = this.props.player;
+        let {name} = this.props.player;
         let game = this.state.playing ? 
             <div>
                 <p>Your bet: {this.state.bet}</p>
+                <p>Total: {this.state.sum}</p>
                 <button onClick={this.handleDraw}>Draw</button>
             </div>
             :
@@ -62,7 +76,7 @@ class Player extends Component {
         return(
             <div>
                 <h4>Player: {name}</h4>
-                <p>Money: {`$ ${money}`}</p>
+                <p>Money: {`$ ${this.state.money}`}</p>
                 {game}
                 <ul>
                     {this.state.cards.map(c => (

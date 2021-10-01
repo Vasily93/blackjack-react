@@ -3,16 +3,18 @@ import Player from './Player';
 import PlayerForm from './PlayerForm';
 import axios from 'axios';
 
-
+//make a dealer
 
 class Game extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            deck: null
+            deck: null,
+            dealerCards: []
         }
         this.drawCard = this.drawCard.bind(this);
         this.registerPlayer = this.registerPlayer.bind(this);
+        this.getCardData = this.getCardData.bind(this);
     }
 
     registerPlayer(name) {
@@ -22,18 +24,27 @@ class Game extends Component {
 
     async drawCard() {
         let card = {};
-        await axios.get(`https://deckofcardsapi.com/api/deck/${this.state.deck.deck_id}/draw/?count=1`)
+        let dealerCard = {};
+        await axios.get(`https://deckofcardsapi.com/api/deck/${this.state.deck.deck_id}/draw/?count=2`)
             .then(res => {
-                const {suit, value, image} = res.data.cards[0];
-                card.suit = suit;
-                card.value = value;
-                card.image = image;
-                this.setState(state => {
-                    state.deck['remaining'] = res.data.remaining;
-                    return state
+                console.log(res)
+                card = this.getCardData(card, res.data.cards[0])
+                dealerCard = this.getCardData(dealerCard, res.data.cards[1])
+                console.log(dealerCard)
+                this.setState({
+                    remaining: res.data.remaining,
+                    // dealerCards: this.state.dealerCards.push(dealerCard)
                 })
             })
             return card;
+    }
+
+    getCardData(obj, data) {
+        const {suit, value, image} = data;
+        obj.suit = suit;
+        obj.value = value;
+        obj.image = image;
+        return obj;
     }
 
     componentDidMount() {
