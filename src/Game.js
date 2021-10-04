@@ -3,7 +3,8 @@ import Player from './Player';
 import PlayerForm from './PlayerForm';
 import axios from 'axios';
 
-//make a dealer
+//Left to do:
+//
 
 class Game extends Component {
     constructor(props) {
@@ -15,6 +16,8 @@ class Game extends Component {
         this.drawCard = this.drawCard.bind(this);
         this.registerPlayer = this.registerPlayer.bind(this);
         this.getCardData = this.getCardData.bind(this);
+        this.getRealValue = this.getRealValue.bind(this);
+        this.whoWon = this.whoWon.bind(this);
     }
 
     registerPlayer(name) {
@@ -24,17 +27,14 @@ class Game extends Component {
 
     async drawCard() {
         let card = {};
-        let dealerCard = {};
         await axios.get(`https://deckofcardsapi.com/api/deck/${this.state.deck.deck_id}/draw/?count=2`)
             .then(res => {
-                console.log(res)
                 card = this.getCardData(card, res.data.cards[0])
-                dealerCard = this.getCardData(dealerCard, res.data.cards[1])
-                console.log(dealerCard)
-                this.setState({
-                    remaining: res.data.remaining,
-                    // dealerCards: this.state.dealerCards.push(dealerCard)
-                })
+                const updatedDeck = this.state.deck;
+                updatedDeck.remaining = updatedDeck.remaining -2;
+                const updatedDealerCards = this.state.dealerCards;
+                updatedDealerCards.push(this.getCardData({}, res.data.cards[1]))
+                this.setState({deck: updatedDeck, dealerCards: updatedDealerCards})
             })
             return card;
     }
@@ -42,9 +42,31 @@ class Game extends Component {
     getCardData(obj, data) {
         const {suit, value, image} = data;
         obj.suit = suit;
-        obj.value = value;
+        obj.value = this.getRealValue(value);
         obj.image = image;
         return obj;
+    }
+
+    getRealValue(value) {
+        let num;
+        if(!isNaN(parseInt(value))) {
+            num = parseInt(value)
+        } else if(value !== 'ACE') {
+            num = 10
+        } else {
+            // const choice = prompt(`You got total of ${this.state.sum}. Would you like to add 1 or 11?`)
+            num = 11
+        }
+        return num;
+    }
+
+    whoWon(playersSum, bet) {
+        let dealerSum = 0;
+        this.state.dealerCards.map(card => dealerSum += card.value);
+        if(dealerSum < playersSum) {
+            console.log('Win!')
+            return bet
+        }
     }
 
     componentDidMount() {
@@ -54,14 +76,13 @@ class Game extends Component {
             }) 
     }
 
-
     render() {
         let deck = this.state.deck ? 
             <p>Deck: {this.state.deck.remaining}</p> :
             <p>Waiting......</p>
 
         const game = this.state.player ?
-            <Player player={this.state.player} draw={this.drawCard}/> :
+            <Player player={this.state.player} draw={this.drawCard} whoWon={this.whoWon}/> :
             <PlayerForm registerPlayer={this.registerPlayer} />
         return(
             <div>

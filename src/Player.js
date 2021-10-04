@@ -32,17 +32,16 @@ class Player extends Component {
     }
 
     addToSum = (value) => {
-        let num;
-        if(!isNaN(parseInt(value))) {
-            num = parseInt(value)
-        } else if(value !== 'ACE') {
-            num = 10
-        } else {
-            const choice = prompt(`You got total of ${this.state.sum}. Would you like to add 1 or 11?`)
-            num = parseInt  (choice);
-            console.log(num)
-        }
-        const newSum = this.state.sum + num;
+        // let num;
+        // if(!isNaN(parseInt(value))) {
+        //     num = parseInt(value)
+        // } else if(value !== 'ACE') {
+        //     num = 10
+        // } else {
+        //     const choice = prompt(`You got total of ${this.state.sum}. Would you like to add 1 or 11?`)
+        //     num = parseInt  (choice);
+        // }
+        const newSum = this.state.sum + value;
         if(newSum > 21) {
             alert('You lost!');
             const updatedMoney = this.state.money - this.state.bet
@@ -57,6 +56,11 @@ class Player extends Component {
         }
     }
 
+    handleGuess = () => {
+        const {sum, bet} = this.state;
+        this.props.whoWon(sum, bet)
+    }
+
     render() {
         let {name} = this.props.player;
         let game = this.state.playing ? 
@@ -64,6 +68,7 @@ class Player extends Component {
                 <p>Your bet: {this.state.bet}</p>
                 <p>Total: {this.state.sum}</p>
                 <button onClick={this.handleDraw}>Draw</button>
+                <button onClick={this.handleGuess}>guess win</button>
             </div>
             :
             <form onSubmit={this.handleSubmit}>
