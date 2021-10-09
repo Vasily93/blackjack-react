@@ -4,18 +4,21 @@ import PlayerForm from './PlayerForm';
 import axios from 'axios';
 import Cards from './Cards';
 
+
 class Game extends Component {
     constructor(props) {
         super(props)
         this.state = {
             deck: null,
-            dealerCards: []
+            dealerCards: {cards:[], sum: 0},
+            playerCards: {cards:[], sum: 0}
         }
         this.drawCard = this.drawCard.bind(this);
         this.registerPlayer = this.registerPlayer.bind(this);
         this.getCardData = this.getCardData.bind(this);
         this.getRealValue = this.getRealValue.bind(this);
         this.whoWon = this.whoWon.bind(this);
+        this.getSum = this.getSum.bind(this);
     }
 
     registerPlayer(name) {
@@ -24,17 +27,19 @@ class Game extends Component {
     }
 
     async drawCard() {
-        let card = {};
         await axios.get(`https://deckofcardsapi.com/api/deck/${this.state.deck.deck_id}/draw/?count=2`)
             .then(res => {
-                card = this.getCardData(card, res.data.cards[0])
                 const updatedDeck = this.state.deck;
                 updatedDeck.remaining = updatedDeck.remaining -2;
-                const updatedDealerCards = this.state.dealerCards;
-                updatedDealerCards.push(this.getCardData({}, res.data.cards[1]))
-                this.setState({deck: updatedDeck, dealerCards: updatedDealerCards})
+
+                const dealerCards = [...this.state.dealerCards.cards, this.getCardData({}, res.data.cards[1])];
+                const updatedDealer = {cards: dealerCards, sum: this.getSum(dealerCards)}
+
+                const playerCards = [...this.state.playerCards.cards, this.getCardData({}, res.data.cards[0])];
+                const updatedPlayer = {cards: playerCards, sum: this.getSum(playerCards)}
+
+                this.setState({deck: updatedDeck, dealerCards: updatedDealer, playerCards: updatedPlayer})
             })
-            return card;
     }
 
     getCardData(obj, data) {
@@ -58,6 +63,12 @@ class Game extends Component {
         return num;
     }
 
+    getSum(cards) {
+        let sum = 0;
+        cards.map(card => sum += card.value);
+        return sum;
+    }
+
     whoWon(playersSum, bet) {
         let dealerSum = 0;
         this.state.dealerCards.map(card => dealerSum += card.value);
@@ -79,26 +90,18 @@ class Game extends Component {
             }) 
     }
 
-    componentDidUpdate() {
-        let dealerSum = 0;
-        this.state.dealerCards.map(card => dealerSum += card.value);
-        if(dealerSum> 21) {
-            console.log('Dealer over 21!!')
-        }
-    }
-
     render() {
         let deck = this.state.deck ? 
             <p>Deck: {this.state.deck.remaining}</p> :
             <p>Waiting......</p>
 
         const player = this.state.player ?
-            <Player player={this.state.player} draw={this.drawCard} whoWon={this.whoWon}/> :
+            <Player player={this.state.player} draw={this.drawCard} whoWon={this.whoWon} cards={this.state.playerCards}/> :
             <PlayerForm registerPlayer={this.registerPlayer} />
         return(
             <div>
                 {deck}
-                <Cards cards={this.state.dealerCards} />
+                <Cards cards={this.state.dealerCards.cards} />
                 {player}
             </div>
         )

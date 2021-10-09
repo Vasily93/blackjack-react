@@ -5,7 +5,6 @@ class Player extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            cards: [],
             bet: 0,
             playing: false,
             sum: 0,
@@ -25,27 +24,7 @@ class Player extends Component {
     }
 
     handleDraw = async() => {
-        const card = await this.props.draw();
-        let newCards = this.state.cards;
-        newCards.push(card);
-        this.setState({cards: newCards})
-        this.addToSum(card.value)
-    }
-
-    addToSum = (value) => {
-        const newSum = this.state.sum + value;
-        if(newSum > 21) {
-            alert('You lost!');
-            const updatedMoney = this.state.money - this.state.bet
-            this.setState(state => state = {
-                bet:0,
-                playing: false,
-                cards: [],
-                sum: 0,
-                money: updatedMoney})
-        } else {
-            this.setState(state => state = {...state, sum: newSum})
-        }
+        this.props.draw();
     }
 
     handleGuess = () => {
@@ -65,7 +44,7 @@ class Player extends Component {
         let game = this.state.playing ? 
             <div>
                 <p>Your bet: {this.state.bet}</p>
-                <p>Total: {this.state.sum}</p>
+                <p>Total: {this.props.cards.sum}</p>
                 <button onClick={this.handleDraw}>Draw</button>
                 <button onClick={this.handleGuess}>guess win</button>
             </div>
@@ -82,7 +61,7 @@ class Player extends Component {
                 <h4>Player: {name}</h4>
                 <p>Money: {`$ ${this.state.money}`}</p>
                 {game}
-                <Cards cards={this.state.cards} />
+                <Cards cards={this.props.cards.cards} />
             </div>
         )
     }
