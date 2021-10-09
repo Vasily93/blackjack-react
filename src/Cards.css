@@ -1,0 +1,15 @@
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 100;
+    overflow: hidden;
+  }
+  
+li {
+    float: left;
+  }
+
+img {
+    min-height: 100px;
+    max-height: 150px;
+}

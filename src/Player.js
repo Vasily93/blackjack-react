@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Cards from './Cards';
 
 class Player extends Component {
     constructor(props) {
@@ -32,15 +33,6 @@ class Player extends Component {
     }
 
     addToSum = (value) => {
-        // let num;
-        // if(!isNaN(parseInt(value))) {
-        //     num = parseInt(value)
-        // } else if(value !== 'ACE') {
-        //     num = 10
-        // } else {
-        //     const choice = prompt(`You got total of ${this.state.sum}. Would you like to add 1 or 11?`)
-        //     num = parseInt  (choice);
-        // }
         const newSum = this.state.sum + value;
         if(newSum > 21) {
             alert('You lost!');
@@ -58,7 +50,14 @@ class Player extends Component {
 
     handleGuess = () => {
         const {sum, bet} = this.state;
-        this.props.whoWon(sum, bet)
+        let res = this.props.whoWon(sum, bet);
+        console.log('result', res)
+        this.setState(state => state = {
+            bet:0,
+            playing: false,
+            cards: [],
+            sum: 0,
+            money: state.money + res})
     }
 
     render() {
@@ -83,13 +82,7 @@ class Player extends Component {
                 <h4>Player: {name}</h4>
                 <p>Money: {`$ ${this.state.money}`}</p>
                 {game}
-                <ul>
-                    {this.state.cards.map(c => (
-                        <li>
-                            <img alt='card' src={c.image}/>
-                        </li>
-                    ))}
-                </ul>
+                <Cards cards={this.state.cards} />
             </div>
         )
     }

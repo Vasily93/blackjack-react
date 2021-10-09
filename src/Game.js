@@ -2,9 +2,7 @@ import React, {Component} from 'react';
 import Player from './Player';
 import PlayerForm from './PlayerForm';
 import axios from 'axios';
-
-//Left to do:
-//
+import Cards from './Cards';
 
 class Game extends Component {
     constructor(props) {
@@ -63,9 +61,14 @@ class Game extends Component {
     whoWon(playersSum, bet) {
         let dealerSum = 0;
         this.state.dealerCards.map(card => dealerSum += card.value);
+        console.log(playersSum, dealerSum)
+        this.setState(state => state = {...state, dealerCards: []})
         if(dealerSum < playersSum) {
             console.log('Win!')
-            return bet
+            return bet*2;
+        } else {
+            console.log('Lost!')
+            return (bet - bet*2);
         }
     }
 
@@ -76,18 +79,27 @@ class Game extends Component {
             }) 
     }
 
+    componentDidUpdate() {
+        let dealerSum = 0;
+        this.state.dealerCards.map(card => dealerSum += card.value);
+        if(dealerSum> 21) {
+            console.log('Dealer over 21!!')
+        }
+    }
+
     render() {
         let deck = this.state.deck ? 
             <p>Deck: {this.state.deck.remaining}</p> :
             <p>Waiting......</p>
 
-        const game = this.state.player ?
+        const player = this.state.player ?
             <Player player={this.state.player} draw={this.drawCard} whoWon={this.whoWon}/> :
             <PlayerForm registerPlayer={this.registerPlayer} />
         return(
             <div>
                 {deck}
-                {game}
+                <Cards cards={this.state.dealerCards} />
+                {player}
             </div>
         )
     }
