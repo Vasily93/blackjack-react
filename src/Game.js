@@ -27,6 +27,7 @@ class Game extends Component {
     }
 
     async drawCard() {
+        const sums = {};
         await axios.get(`https://deckofcardsapi.com/api/deck/${this.state.deck.deck_id}/draw/?count=2`)
             .then(res => {
                 const updatedDeck = this.state.deck;
@@ -38,8 +39,12 @@ class Game extends Component {
                 const playerCards = [...this.state.playerCards.cards, this.getCardData({}, res.data.cards[0])];
                 const updatedPlayer = {cards: playerCards, sum: this.getSum(playerCards)}
 
+                sums.dealer = updatedDealer.sum;
+                sums.player = updatedPlayer.sum;
+
                 this.setState({deck: updatedDeck, dealerCards: updatedDealer, playerCards: updatedPlayer})
             })
+            return sums;
     }
 
     getCardData(obj, data) {
@@ -69,17 +74,15 @@ class Game extends Component {
         return sum;
     }
 
-    whoWon(playersSum, bet) {
-        let dealerSum = 0;
-        this.state.dealerCards.map(card => dealerSum += card.value);
-        console.log(playersSum, dealerSum)
-        this.setState(state => state = {...state, dealerCards: []})
-        if(dealerSum < playersSum) {
+    whoWon(bet) {
+        if(this.state.dealerCards.sum < this.state.playerCards.sum) {
             console.log('Win!')
-            return bet*2;
-        } else {
+            return bet;
+        } else if(this.state.dealerCards.sum < this.state.playerCards.sum) {
             console.log('Lost!')
             return (bet - bet*2);
+        } else {
+            console.log('it a draw!!!')
         }
     }
 
