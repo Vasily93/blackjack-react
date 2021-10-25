@@ -24,16 +24,20 @@ class Player extends Component {
     }
 
     handleDraw = async() => {
-        const {dealer, player} = await this.props.draw();
-        if(dealer > 21) {
-            console.log('Dealer is over 21')
-        } else if(player > 21) {
-            console.log('Player is over 21')
+        const {dealerSum, playerSum} = await this.props.draw();
+        if(playerSum > 21) {
+            this.props.over21();
+            this.setState(state => state = {...state, playing: false, money: (this.state.money - this.state.bet)});
+        } else if(dealerSum > 21) {
+            this.props.over21();
+            this.setState(state => state = {...state, playing: false, money: (this.state.money + this.state.bet*2)});
         }
     }
 
     handleGuess = () => {
-        this.props.whoWon(this.state.bet)
+        const result = this.props.whoWon(this.state.bet);
+        const newSum = this.state.money + (parseInt(result));
+        this.setState(state => state = {...state, playing: false, money: newSum})
     }
 
     render() {

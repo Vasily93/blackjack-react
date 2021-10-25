@@ -19,6 +19,8 @@ class Game extends Component {
         this.getRealValue = this.getRealValue.bind(this);
         this.whoWon = this.whoWon.bind(this);
         this.getSum = this.getSum.bind(this);
+        this.clearCards = this.clearCards.bind(this);
+        this.over21 = this.over21.bind(this);
     }
 
     registerPlayer(name) {
@@ -39,8 +41,8 @@ class Game extends Component {
                 const playerCards = [...this.state.playerCards.cards, this.getCardData({}, res.data.cards[0])];
                 const updatedPlayer = {cards: playerCards, sum: this.getSum(playerCards)}
 
-                sums.dealer = updatedDealer.sum;
-                sums.player = updatedPlayer.sum;
+                sums.dealerSum = updatedDealer.sum;
+                sums.playerSum = updatedPlayer.sum;
 
                 this.setState({deck: updatedDeck, dealerCards: updatedDealer, playerCards: updatedPlayer})
             })
@@ -74,16 +76,36 @@ class Game extends Component {
         return sum;
     }
 
+    clearCards() {
+        this.setState({
+            deck: this.state.deck,
+            dealerCards: {cards:[], sum: 0},
+            playerCards: {cards:[], sum: 0}
+        })
+    }
+
+    over21() {
+        this.clearCards()
+    }
+
     whoWon(bet) {
-        if(this.state.dealerCards.sum < this.state.playerCards.sum) {
-            console.log('Win!')
-            return bet;
-        } else if(this.state.dealerCards.sum < this.state.playerCards.sum) {
-            console.log('Lost!')
-            return (bet - bet*2);
-        } else {
-            console.log('it a draw!!!')
+        let res;
+        switch(this.state.dealerCards.sum < this.state.playerCards.sum) {
+            case true:
+                res = bet*2;
+                console.log('Win', res);
+                break;
+            case false:
+                res = (bet - bet*2)
+                console.log('Lost', res);
+                break;
+            default:
+                res = 0
+                console.log('Draw', res)
         }
+
+        this.clearCards();
+        return res;
     }
 
     componentDidMount() {
@@ -99,7 +121,12 @@ class Game extends Component {
             <p>Waiting......</p>
 
         const player = this.state.player ?
-            <Player player={this.state.player} draw={this.drawCard} whoWon={this.whoWon} cards={this.state.playerCards}/> :
+            <Player player={this.state.player} 
+                draw={this.drawCard} 
+                whoWon={this.whoWon} 
+                cards={this.state.playerCards}
+                over21={this.over21}    
+            /> :
             <PlayerForm registerPlayer={this.registerPlayer} />
         return(
             <div>
