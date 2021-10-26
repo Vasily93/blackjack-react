@@ -3,6 +3,7 @@ import Player from './Player';
 import PlayerForm from './PlayerForm';
 import axios from 'axios';
 import Cards from './Cards';
+import backCard from './backC.png';
 
 
 class Game extends Component {
@@ -35,10 +36,10 @@ class Game extends Component {
                 const updatedDeck = this.state.deck;
                 updatedDeck.remaining = updatedDeck.remaining -2;
 
-                const dealerCards = [...this.state.dealerCards.cards, this.getCardData({}, res.data.cards[1])];
+                const dealerCards = [...this.state.dealerCards.cards, this.getCardData({}, res.data.cards[1], true)];
                 const updatedDealer = {cards: dealerCards, sum: this.getSum(dealerCards)}
 
-                const playerCards = [...this.state.playerCards.cards, this.getCardData({}, res.data.cards[0])];
+                const playerCards = [...this.state.playerCards.cards, this.getCardData({}, res.data.cards[0], false)];
                 const updatedPlayer = {cards: playerCards, sum: this.getSum(playerCards)}
 
                 sums.dealerSum = updatedDealer.sum;
@@ -49,23 +50,30 @@ class Game extends Component {
             return sums;
     }
 
-    getCardData(obj, data) {
+    getCardData(obj, data, isDealer) {
         const {suit, value, image} = data;
         obj.suit = suit;
-        obj.value = this.getRealValue(value);
-        obj.image = image;
+        obj.value = this.getRealValue(value, isDealer);
+        console.log(this.state.dealerCards.cards.length)
+        isDealer && this.state.dealerCards.cards.length >= 1 ?  
+            obj.image = backCard :
+            obj.image = image;
         return obj;
     }
 
-    getRealValue(value) {
+    getRealValue(value, isDealer) {
         let num;
         if(!isNaN(parseInt(value))) {
             num = parseInt(value)
         } else if(value !== 'ACE') {
             num = 10
         } else {
-            // const choice = prompt(`You got total of ${this.state.sum}. Would you like to add 1 or 11?`)
-            num = 11
+            if(isDealer === false) {
+                let choise = prompt(`You got total of ${this.state.playerCards.sum}. Would you like to add 1 or 11?`);
+                num = parseInt(choise);
+            } else {
+                num = 11;
+            }
         }
         return num;
     }
