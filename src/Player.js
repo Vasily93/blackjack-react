@@ -27,9 +27,11 @@ class Player extends Component {
         const {dealerSum, playerSum} = await this.props.draw();
         if(playerSum > 21) {
             this.props.over21();
+            alert(`${this.props.player.name} went over 21! You lost $ ${this.state.bet}`)
             this.setState(state => state = {...state, playing: false, money: (this.state.money - this.state.bet)});
         } else if(dealerSum > 21) {
             this.props.over21();
+            alert(`Dealer went over 21! You Win $ ${this.state.bet*2}`)
             this.setState(state => state = {...state, playing: false, money: (this.state.money + this.state.bet*2)});
         }
     }

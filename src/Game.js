@@ -72,7 +72,9 @@ class Game extends Component {
                 let choise = prompt(`You got total of ${this.state.playerCards.sum}. Would you like to add 1 or 11?`);
                 num = parseInt(choise);
             } else {
-                num = 11;
+                (this.state.dealerCards.sum + 11) > 21 ? 
+                    num = 1 :
+                    num = 11; 
             }
         }
         return num;
@@ -101,15 +103,15 @@ class Game extends Component {
         switch(this.state.dealerCards.sum < this.state.playerCards.sum) {
             case true:
                 res = bet*2;
-                console.log('Win', res);
+                alert(`You Win $ ${res}`);
                 break;
             case false:
                 res = (bet - bet*2)
-                console.log('Lost', res);
+                alert(`You Lost $ ${bet}`);
                 break;
             default:
                 res = 0
-                console.log('Draw', res)
+                alert("It's a draw!!")
         }
 
         this.clearCards();
