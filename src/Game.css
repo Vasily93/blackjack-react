@@ -1,0 +1,11 @@
+.Game {
+    max-width: 100%;
+    min-width: 90%;
+}
+
+.Game-playerBlock {
+    border-style: dotted;
+    padding: 10px;
+    min-height: 200px;
+    margin: 10px
+}

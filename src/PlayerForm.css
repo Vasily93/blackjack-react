@@ -1,0 +1,14 @@
+.PlayerForm {
+    display: flex;
+    min-height: 200px;
+    align-items: center;
+    justify-content: center;
+}
+.PlayerForm-form {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+}
+.PlayerForm-button {
+    margin-top: 20px;
+}

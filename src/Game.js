@@ -4,6 +4,7 @@ import PlayerForm from './PlayerForm';
 import axios from 'axios';
 import Cards from './Cards';
 import backCard from './backC.png';
+import './Game.css'
 
 
 class Game extends Component {
@@ -113,7 +114,7 @@ class Game extends Component {
                 res = 0
                 alert("It's a draw!!")
         }
-
+ 
         this.clearCards();
         return res;
     }
@@ -124,6 +125,7 @@ class Game extends Component {
                 this.setState({deck: res.data})
             }) 
     }
+
 
     render() {
         let deck = this.state.deck ? 
@@ -139,10 +141,15 @@ class Game extends Component {
             /> :
             <PlayerForm registerPlayer={this.registerPlayer} />
         return(
-            <div>
-                {deck}
-                <Cards cards={this.state.dealerCards.cards} />
-                {player}
+            <div className='Game'>
+                <div className='Game-playerBlock'>
+                    <h3>Dealer</h3>
+                    {deck}
+                    <Cards cards={this.state.dealerCards.cards} />
+                </div>
+                <div className='Game-playerBlock'>
+                    {player}
+                </div>
             </div>
         )
     }

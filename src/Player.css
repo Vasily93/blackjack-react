@@ -1,0 +1,25 @@
+
+.Player {
+    display: flex;
+    flex-direction: column;
+}
+.Player-name {
+    align-self: flex-start;
+    margin-left: 3px;
+}
+.Player-bank {
+    position: fixed;
+    align-self: flex-end;
+}
+.Player-nums {
+    align-self: flex-end;
+
+}
+.Bet-form {
+    align-self: center;
+    padding-top: 100px;
+    margin-bottom: 20px;
+}
+.Player-buttons {
+    flex-direction: row;
+}

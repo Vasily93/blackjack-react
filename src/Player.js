@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Cards from './Cards';
+import './Player.css';
 
 class Player extends Component {
     constructor(props) {
@@ -45,26 +46,30 @@ class Player extends Component {
     render() {
         let {name} = this.props.player;
         let game = this.state.playing ? 
-            <div>
-                <p>Your bet: {this.state.bet}</p>
-                <p>Total: {this.props.cards.sum}</p>
-                <button onClick={this.handleDraw}>Draw</button>
-                <button onClick={this.handleGuess}>guess win</button>
+            <div className='Player'>
+                <span className='Player-nums'>Your bet: {this.state.bet}</span>
+                <span className='Player-nums'>Total: {this.props.cards.sum}</span>
+                <div style={{minHeight:'130px'}}>
+                    <Cards cards={this.props.cards.cards}/>
+                </div>
+                <div className='Player-buttons'>
+                    <button onClick={this.handleDraw}>Draw</button>
+                    <button onClick={this.handleGuess}>guess win</button>
+                </div>
             </div>
             :
-            <form onSubmit={this.handleSubmit}>
+            <form className='Bet-form' onSubmit={this.handleSubmit}>
                 <label>
-                    Your bet:
+                    <p>Your bet:</p>
                     <input onChange={this.handleChange} value={this.state.bet}/>
                 </label>
                 <button>Place a bet</button>
             </form>
         return(
-            <div>
-                <h4>Player: {name}</h4>
-                <p>Money: {`$ ${this.state.money}`}</p>
+            <div className='Player'>
+                <span className='Player-name'>Player: {name}</span>
+                <span className='Player-bank'>Your Bank: {`$ ${this.state.money}`}</span>
                 {game}
-                <Cards cards={this.props.cards.cards} />
             </div>
         )
     }

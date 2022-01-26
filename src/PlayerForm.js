@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import './PlayerForm.css'
 
 class PlayerForm extends Component {
     constructor(props) {
@@ -20,12 +21,14 @@ class PlayerForm extends Component {
 
     render() {
         return(
-            <form onSubmit={this.handleSubmit}>
-                <label >Enter Your Name To start a Game:
-                    <input type='text' onChange={this.handleChange} value={this.state.name} />
-                </label>
-                <button>Create player</button>
-            </form>
+            <div className='PlayerForm'>
+                <form className='PlayerForm-form' onSubmit={this.handleSubmit}>
+                    <label >Enter Your Name To start a Game:
+                        <input type='text' onChange={this.handleChange} value={this.state.name} />
+                    </label>
+                    <button className="PlayerForm-button">Create player</button>
+                </form>
+            </div>
         )
     }
 }
