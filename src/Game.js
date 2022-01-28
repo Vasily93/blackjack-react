@@ -4,7 +4,9 @@ import PlayerForm from './PlayerForm';
 import axios from 'axios';
 import Cards from './Cards';
 import backCard from './backC.png';
-import './Game.css'
+import MessageModal from './MessageModal';
+import AceModal from './AceChoiceModal';
+import './Game.css';
 
 
 class Game extends Component {
@@ -13,7 +15,11 @@ class Game extends Component {
         this.state = {
             deck: null,
             dealerCards: {cards:[], sum: 0},
-            playerCards: {cards:[], sum: 0}
+            playerCards: {cards:[], sum: 0},
+            message: 'Black Jack',
+            isModal: false,
+            isAceModal: false,
+            aceValue: null
         }
         this.drawCard = this.drawCard.bind(this);
         this.registerPlayer = this.registerPlayer.bind(this);
@@ -23,6 +29,9 @@ class Game extends Component {
         this.getSum = this.getSum.bind(this);
         this.clearCards = this.clearCards.bind(this);
         this.over21 = this.over21.bind(this);
+        this.showModal = this.showModal.bind(this);
+        this.hideModal = this.hideModal.bind(this);
+        this.aceChoice = this.aceChoice.bind(this);
     }
 
     registerPlayer(name) {
@@ -55,7 +64,6 @@ class Game extends Component {
         const {suit, value, image} = data;
         obj.suit = suit;
         obj.value = this.getRealValue(value, isDealer);
-        console.log(this.state.dealerCards.cards.length)
         isDealer && this.state.dealerCards.cards.length >= 1 ?  
             obj.image = backCard :
             obj.image = image;
@@ -63,27 +71,33 @@ class Game extends Component {
     }
 
     getRealValue(value, isDealer) {
-        let num;
-        if(!isNaN(parseInt(value))) {
-            num = parseInt(value)
-        } else if(value !== 'ACE') {
-            num = 10
-        } else {
-            if(isDealer === false) {
-                let choise = prompt(`You got total of ${this.state.playerCards.sum}. Would you like to add 1 or 11?`);
-                num = parseInt(choise);
-            } else {
-                (this.state.dealerCards.sum + 11) > 21 ? 
-                    num = 1 :
-                    num = 11; 
-            }
-        }
-        return num;
+        if(!isNaN(parseInt(value))) return parseInt(value);
+        if(value !== 'ACE') return 10;
+        if(value === 'ACE') {
+            const whosCards = isDealer ? 
+                this.state.dealerCards.sum : 
+                this.state.playerCards.sum
+            let num = 0;
+            (whosCards + 11) > 21 ? 
+                num += 1 :
+                num += 11;
+            return num;
+        } 
+        // else {
+        //     this.setState({isAceModal: true})
+        //     return 'ACE'};
     }
 
     getSum(cards) {
         let sum = 0;
-        cards.map(card => sum += card.value);
+        cards.map(card => {
+            // if(card.value === 'ACE') {
+            //     sum += this.state.aceValue;
+            // } else {
+            //     sum += card.value;
+            // }
+            return sum+= card.value;
+        });
         return sum;
     }
 
@@ -95,8 +109,27 @@ class Game extends Component {
         })
     }
 
-    over21() {
-        this.clearCards()
+    over21(message) {
+        this.showModal(message)
+    }
+
+    showModal(message) {
+        this.setState({
+                message: message,
+                isModal: true,
+            })
+    }
+
+    hideModal() {
+         this.setState({isModal: false})
+         this.clearCards()
+    }
+
+    aceChoice(choice) {
+        this.setState({ 
+            isAceModal: false,
+            aceValue: choice
+        })
     }
 
     whoWon(bet) {
@@ -104,18 +137,16 @@ class Game extends Component {
         switch(this.state.dealerCards.sum < this.state.playerCards.sum) {
             case true:
                 res = bet*2;
-                alert(`You Win $ ${res}`);
+                this.showModal(`You Win $ ${res}`)
                 break;
             case false:
-                res = (bet - bet*2)
-                alert(`You Lost $ ${bet}`);
+                res = (bet - bet*2);
+                this.showModal(`You lost ${bet}`)
                 break;
             default:
-                res = 0
-                alert("It's a draw!!")
+                res = 0;
+                this.showModal('This is a Draw!')
         }
- 
-        this.clearCards();
         return res;
     }
 
@@ -137,11 +168,19 @@ class Game extends Component {
                 draw={this.drawCard} 
                 whoWon={this.whoWon} 
                 cards={this.state.playerCards}
-                over21={this.over21}    
+                over21={this.over21}
+                clearCards={this.clearCards}  
             /> :
             <PlayerForm registerPlayer={this.registerPlayer} />
         return(
             <div className='Game'>
+                <MessageModal message={this.state.message} 
+                    visible={this.state.isModal}
+                    hideModal={this.hideModal}
+                />
+                <AceModal visible={this.state.isAceModal} 
+                    aceChoice={this.aceChoice}
+                />
                 <div className='Game-playerBlock'>
                     <h3>Dealer</h3>
                     {deck}

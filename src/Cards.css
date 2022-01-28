@@ -1,12 +1,10 @@
 ul {
     list-style-type: none;
     padding-left: 5px;
-    /* background-color: rgba(255, 235, 205, 0.242); */
     margin: 5px;
   }
   
 li {
-    /* overflow-y: scroll; */
     display: inline;
     margin-top: 2px;
     margin-bottom: 2px;
@@ -15,4 +13,8 @@ li {
 img {
     min-height: 120px;
     max-height: 120px;
+}
+
+.Cards {
+  min-height: 130px;
 }
