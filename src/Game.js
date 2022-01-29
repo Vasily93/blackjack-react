@@ -141,10 +141,13 @@ class Game extends Component {
     }
 
     whoWon(bet) {
-        let res;
-        switch(this.state.dealerCards.sum < this.state.playerCards.sum 
-            && this.state.dealerCards.sum === this.state.playerCards.sum
-            ) {
+        let res = 0;
+        if(this.state.dealerCards.sum === this.state.playerCards.sum) {
+            this.showModal('This is a Draw!')
+            return res;
+
+        }
+        switch(this.state.dealerCards.sum < this.state.playerCards.sum) {
             case true:
                 res = bet*2;
                 this.showModal(`You Win $ ${res}`)
@@ -155,7 +158,6 @@ class Game extends Component {
                 break;
             default:
                 res = 0;
-                this.showModal('This is a Draw!')
         }
         return res;
     }
