@@ -15,7 +15,9 @@ class Player extends Component {
     }
 
     handleSubmit = (e) => {
-        this.setState(state => state = {...state,playing: true, bet: parseInt(e.target.id)})
+        this.setState(state => state = {...state,playing: true, bet: parseInt(e.target.id)});
+        this.handleDraw()
+        this.handleDraw()
 
     }
 

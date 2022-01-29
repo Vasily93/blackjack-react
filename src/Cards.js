@@ -7,10 +7,6 @@ class Cards extends Component {
         super(props)
         this.state = {}
     }
-
-    componentDidUpdate() {
-        console.log('updated!!!!')
-    }
     render() {
         return(
             <div className='Cards'>
