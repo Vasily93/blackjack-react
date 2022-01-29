@@ -81,29 +81,22 @@ class Game extends Component {
     getRealValue(value, isDealer) {
         if(!isNaN(parseInt(value))) return parseInt(value);
         if(value !== 'ACE') return 10;
-        if(value === 'ACE') {
-            const whosCards = isDealer ? 
-                this.state.dealerCards.sum : 
-                this.state.playerCards.sum
+        if(value === 'ACE' && isDealer) {
             let num = 0;
-            (whosCards + 11) > 21 ? 
+            (this.state.dealerCards.sum + 11) > 21 ? 
                 num += 1 :
                 num += 11;
             return num;
         } 
-        // else {
-        //     this.setState({isAceModal: true})
-        //     return 'ACE'};
+        if(value === 'ACE' && isDealer === false) {
+            this.setState({ isAceModal: true})
+            return 0;
+        }
     }
 
     getSum(cards) {
         let sum = 0;
         cards.map(card => {
-            // if(card.value === 'ACE') {
-            //     sum += this.state.aceValue;
-            // } else {
-            //     sum += card.value;
-            // }
             return sum+= card.value;
         });
         return sum;
@@ -134,9 +127,13 @@ class Game extends Component {
     }
 
     aceChoice(choice) {
+        const newSum = this.state.playerCards.sum + choice;
         this.setState({ 
             isAceModal: false,
-            aceValue: choice
+            playerCards: {
+                cards: this.state.playerCards.cards,
+                sum: newSum
+            }
         })
     }
 
@@ -194,7 +191,7 @@ class Game extends Component {
                     aceChoice={this.aceChoice}
                 />
                 <div className='Game-playerBlock'>
-                    <h3>Dealer</h3>
+                    <h4>Dealer</h4>
                     {deck}
                     {this.state.player && <Cards cards={this.state.dealerCards.cards} />}
                 </div>
