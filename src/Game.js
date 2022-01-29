@@ -19,10 +19,12 @@ class Game extends Component {
             message: 'Black Jack',
             isModal: false,
             isAceModal: false,
-            aceValue: null
+            aceValue: null,
+            player: null
         }
         this.drawCard = this.drawCard.bind(this);
         this.registerPlayer = this.registerPlayer.bind(this);
+        this.destroyPlayer = this.destroyPlayer.bind(this);
         this.getCardData = this.getCardData.bind(this);
         this.getRealValue = this.getRealValue.bind(this);
         this.whoWon = this.whoWon.bind(this);
@@ -35,8 +37,14 @@ class Game extends Component {
     }
 
     registerPlayer(name) {
-        const player = {name: name, money: 500};
+        const player = {name: name};
         this.setState(state => state = {...state, player: player})
+    }
+
+    destroyPlayer() {
+        this.setState({player: null})
+        this.showModal('You lost All Yuor Money. Start over!')
+
     }
 
     async drawCard() {
@@ -134,14 +142,16 @@ class Game extends Component {
 
     whoWon(bet) {
         let res;
-        switch(this.state.dealerCards.sum < this.state.playerCards.sum) {
+        switch(this.state.dealerCards.sum < this.state.playerCards.sum 
+            && this.state.dealerCards.sum === this.state.playerCards.sum
+            ) {
             case true:
                 res = bet*2;
                 this.showModal(`You Win $ ${res}`)
                 break;
             case false:
                 res = (bet - bet*2);
-                this.showModal(`You lost ${bet}`)
+                this.showModal(`You lost ${bet}`) 
                 break;
             default:
                 res = 0;
@@ -169,7 +179,7 @@ class Game extends Component {
                 whoWon={this.whoWon} 
                 cards={this.state.playerCards}
                 over21={this.over21}
-                clearCards={this.clearCards}  
+                destroyPlayer={this.destroyPlayer}  
             /> :
             <PlayerForm registerPlayer={this.registerPlayer} />
         return(
@@ -184,7 +194,7 @@ class Game extends Component {
                 <div className='Game-playerBlock'>
                     <h3>Dealer</h3>
                     {deck}
-                    <Cards cards={this.state.dealerCards.cards} />
+                    {this.state.player && <Cards cards={this.state.dealerCards.cards} />}
                 </div>
                 <div className='Game-playerBlock'>
                     {player}

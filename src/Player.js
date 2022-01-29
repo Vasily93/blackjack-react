@@ -9,12 +9,12 @@ class Player extends Component {
             bet: 0,
             playing: false,
             sum: 0,
-            money: 500
+            money: 400,
+            bets: []
         }
     }
 
     handleSubmit = (e) => {
-        console.log(e.target.id)
         this.setState(state => state = {...state,playing: true, bet: parseInt(e.target.id)})
 
     }
@@ -42,33 +42,49 @@ class Player extends Component {
         this.setState(state => state = {...state, playing: false, money: newSum})
     }
 
-    componentDidUpdate() {
-        if(this.state.money <= 0) {
-            
+    setBets = () => {
+        const arr = [];
+        let n =this.state.money;
+        while (arr.length < 4 && n > 10) {
+            arr.push(n);
+            n = Math.floor(n/2)
+        }
+        this.setState({bets: arr})
+    }
+
+    componentDidMount() {
+        this.setBets()
+    }
+
+    componentDidUpdate(prevPorps, prevState) {
+        if(prevState.money !== this.state.money) {
+            this.setBets()
+        }
+        if(this.state.money === 0) {
+            this.props.destroyPlayer()
         }
     }
 
     render() {
-        let {name} = this.props.player;
-        let game = this.state.playing ? 
-            <div className='Player-buttons'>
-                <button onClick={this.handleDraw}>Draw</button>
-                <button onClick={this.handleGuess}>guess win</button>
-            </div>
-            :
-            <div className='Player-buttons'>
-                <button id='20' onClick={this.handleSubmit}>20</button>
-                <button id='50' onClick={this.handleSubmit}>50</button>
-                <button id={this.state.money} onClick={this.handleSubmit}>{this.state.money}</button>
-            </div>
+
         return(
             <div className='Player'>
-                <span className='Player-name'>Player: {name}</span>
+                <span className='Player-name'>Player: {this.props.player.name}</span>
                 <span className='Player-bank'>Your Bank: {`$ ${this.state.money}`}</span>
                 <span className='Player-nums'>Your bet: {this.state.bet}</span>
                 <span className='Player-nums'>Total: {this.props.cards.sum}</span>
                 <Cards cards={this.props.cards.cards}/>
-                {game}
+                {this.state.playing === true &&
+                    <div className='Player-buttons'>
+                        <button onClick={this.handleDraw}>Draw</button>
+                        <button onClick={this.handleGuess}>guess win</button>
+                    </div>
+                }
+                {this.state.playing === false &&
+                        <div className='Player-buttons'>
+                        {this.state.bets.map(n =>(<button onClick={this.handleSubmit} id={n}>{n}</button>))}
+                    </div>
+                }
             </div>
         )
     }
