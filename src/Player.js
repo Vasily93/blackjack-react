@@ -75,11 +75,11 @@ class Player extends Component {
                 <span className='Player-bank'>Your Bank: {`$ ${this.state.money}`}</span>
                 <span className='Player-nums'>Your bet: {this.state.bet}</span>
                 <span className='Player-nums'>Total: {this.props.cards.sum}</span>
-                <Cards cards={this.props.cards.cards}/>
+                <Cards isDealer={false} cards={this.props.cards.cards}/>
                 {this.state.playing === true &&
                     <div className='Player-buttons'>
-                        <button onClick={this.handleDraw}>Draw</button>
-                        <button onClick={this.handleGuess}>guess win</button>
+                        <button onClick={this.handleDraw}>Hit</button>
+                        <button onClick={this.handleGuess}>Stand</button>
                     </div>
                 }
                 {this.state.playing === false &&

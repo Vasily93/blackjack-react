@@ -3,7 +3,6 @@ import Player from './Player';
 import PlayerForm from './PlayerForm';
 import axios from 'axios';
 import Cards from './Cards';
-import backCard from './backC.png';
 import MessageModal from './MessageModal';
 import AceModal from './AceChoiceModal';
 import './Game.css';
@@ -19,7 +18,6 @@ class Game extends Component {
             message: 'Black Jack',
             isModal: false,
             isAceModal: false,
-            aceValue: null,
             player: null
         }
         this.drawCard = this.drawCard.bind(this);
@@ -72,9 +70,7 @@ class Game extends Component {
         const {suit, value, image} = data;
         obj.suit = suit;
         obj.value = this.getRealValue(value, isDealer);
-        isDealer && this.state.dealerCards.cards.length >= 1 ?  
-            obj.image = backCard :
-            obj.image = image;
+        obj.image = image;
         return obj;
     }
 
@@ -193,7 +189,7 @@ class Game extends Component {
                 <div className='Game-playerBlock'>
                     <h4>Dealer</h4>
                     {deck}
-                    {this.state.player && <Cards cards={this.state.dealerCards.cards} />}
+                    {this.state.player && <Cards isDealer={true} isModal={this.state.isModal} cards={this.state.dealerCards.cards} />}
                 </div>
                 <div className='Game-playerBlock'>
                     {player}
